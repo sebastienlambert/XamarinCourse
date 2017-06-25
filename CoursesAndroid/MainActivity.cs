@@ -1,6 +1,8 @@
 ﻿using Android.App;
 using Android.Widget;
 using Android.OS;
+using CoursesLibrary;
+using Android.Net;
 
 namespace CoursesAndroid
 {
@@ -12,6 +14,7 @@ namespace CoursesAndroid
         TextView textTitle;
         ImageView imageCourse;
         TextView textDescription;
+        CourseManager courseManager; 
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -28,23 +31,33 @@ namespace CoursesAndroid
 
             buttonPrev.Click += ButtonPrev_Click;
             buttonNext.Click += ButtonNext_Click;
-            
 
+            courseManager = new CourseManager();
+            courseManager.MoveFirst();
+            UpdateUI();
         }
 
         private void ButtonNext_Click(object sender, System.EventArgs e)
         {
-            textTitle.Text = "Next Clicked";
-            textDescription.Text = "The description that appears when Next is clicked.";
-            imageCourse.SetImageResource(Resource.Drawable.DocImage000000025);
+            courseManager.MoveNext();
+            UpdateUI();
         }
 
         private void ButtonPrev_Click(object sender, System.EventArgs e)
         {
-            textTitle.Text = "Prev Clicked";
-            textDescription.Text = "The description that appears when Prev is clicked.";
-            imageCourse.SetImageResource(Resource.Drawable.DocImage000000026);
+            courseManager.MovePrev();
+            UpdateUI();
+        }
 
+        private void UpdateUI()
+        {
+            textTitle.Text = courseManager.Current.Title;
+            textDescription.Text = courseManager.Current.Description;
+            imageCourse.SetImageResource(ResourceHelper.TranslateDrawable(courseManager.Current.Image));
+            imageCourse.SetImageURI(Uri.Parse("drawable://" + courseManager.Current.Image ));
+
+            buttonNext.Enabled = courseManager.CanMovenNext;
+            buttonPrev.Enabled = courseManager.CanMovePrev;         
         }
     }
 }
